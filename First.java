@@ -420,11 +420,128 @@ Heap Memory: where the actual objects are stored. It is created when our program
 Stack Memory: where the reference of objects and primitive data types are stored. 
 
 Object class in Java: 
-Object is the parent class of every class by default, we can use and even override few methods of this class. toString() is one of those methods which returns string. equals() is also one which returns true/false. We can override the hashcode() method as well, it returns int. getClass() method gives the class of 
+Object is the parent class of every class by default, we can use and even override few methods of this class. toString() is one of those methods which returns string. equals() is also one which returns true/false. We can override the hashcode() method as well, it returns int. getClass() method gives the class. If we try to print the object it will print it after using .toString() with it. 
 
 What is the contract b/w hashcode and equals method ? If equals method of two objects gives true that means their hashcode is also same. As each object has a unique hashcode. 
 
 Parent class reference variable can point to child class object in java and will be able to access only the methods and variables of parent class. But its vice-versa is not possibe. For example every dog is an animal but every animal is not dog. 
+
+
+
+
+
+********************************** Java Exceptions ***************************************
+An exception is an unexpected event that occurs during program execution. It affects the flow of program instructions which can cause the program to terminate abnormally. It can occur because of many reasons like: invalid user input, loss of network connection, device failure, physical limitations (out of disk memory), code errors, opening an unavailable file. 
+
+- Hirarchy till Exceptions:
+
+java.lang.Object Parent of everything in Java
+   ↓
+java.lang.Throwable Parent of all errors & exceptions
+   ↓
+   ├── java.lang.Error Serious issues (not meant to be handled usually)
+   ↓
+   └── java.lang.Exception Conditions you can handle in your code
+          ↓
+          ├── Checked Exceptions (Checked at compile time)
+          │      ├── IOException
+          │      ├── SQLException
+          │      └── ClassNotFoundException
+          │
+          └── Unchecked Exceptions (Runtime Exceptions), it is programmer's fault. 
+                 └── java.lang.RuntimeException
+                        ├── NullPointerException
+                        ├── ArithmeticException
+                        ├── ArrayIndexOutOfBoundsException
+                        └── IllegalArgumentException
+
+
+
+* try{} block: put your code inside of try block which can create runtime issues. 
+* catch(NameOfException e){} : handle that error here inside of catch block. We can put RuntimeException or directly Exception class at the place of NameOfException(NullPointerException, ArithmeticException); We can use multiple catch blocks together as well. This "e" object has multiple inbuilt methods as well. 
+* finally{} : this block will always run no matter exception occurs or not. But it can still stop execution in some cases like when we use System.exit() method, or an exception orrurs in the finally block, or the death of a thread. 
+
+
+Java throws: 
+we use "throws" keyword in the method declaration to declare the type of exception that might occur within it. This is done so that when someone calls this method they can handle it properly using try-catch block so that they can get an idea that the method they are going to use can throw this kind of exception. 
+Code-
+import java.io.*;
+class Main{
+    public static void findFile() throws IOException{
+        // code that may produce IOException
+        File newFile = new File("test.txt");
+        FileInputStream stream = new FileInputStream(newFile);
+    }
+}
+
+
+Java throw:
+The "throw" keyword is used to explicitly throw a single exception. 
+Code-
+class Main{
+    public static void divideByZero(){
+        throw new ArithmeticException("Trying to divide by 0");
+    }
+}
+* But remember if we are throwing exception by ourself then either put that throw statement inside of try block means handle it there only. Or put the "throws" keyword and exception name with function declaration/signature. 
+
+* We can create our own exceptions as well. 
+
+
+
+
+
+
+********************************** Java Generics and Wrapper Classes ***************************************
+
+Wrapper Classes: A wrapper class in Java is a class whose objects wraps or contains primitive data types. char -> Character, byte -> Byte, int -> Integer, short -> Short etc. We need it because in DSA the collections frameworks like Arraylist works only with objects. Also an object is needed to support synchronization in multithreading. 
+
+Autoboxing: The automatic conversion of primitive type of the object of their corresponding wrapper class. For example - conversion of int to Integer, long to Long, double to Double etc. 
+
+AutoUnboxing: It is just the reverse of autoboxing. The automatic conversion of wrapper class object to its corresponding primitive data type.  For example - Integer to int, Long to long etc. 
+
+The wrapper class is a class which just have primitive data type inside of it. 
+
+Integer obj = 12; // autoboxing; 
+int age = obj;  // autounboxing;
+
+Integer obj = Integer.valueOf("21");  // This method is used to get Integer from any other data type. 
+
+
+Generics: 
+Generics means parameterized types. With the help of it we can define the data type of a variable - not just primitive types but also custom types, which makes the code flexible and type-safe.
+
+class MyClass<E, T>{ // Here we simply have to tell the class that we are using this kind of datatypes inside you. 
+    E data;
+    T data2;
+    void takeData(E data){
+        this.data = data;
+    }
+    T returnData() return data2;
+}
+
+MyClass<String, Integer> m1 = new MyClsas<>(); // Here while creating the object of this class we have to define that for this object, what would be the data types of those generic variables of the class. But remember it can contain only wrapper class like Integer, not primitive data type like int. 
+MyClass<String, String> m2 = new MyClass<String, Strign>(); // Older way.
+
+Similarly we can work with interfaces and methods also. 
+
+Generic Methods: We can create generic methods in non-generic class as well. 
+class MyClass2{
+    <E> void fun(E data){
+        sout(data);
+    }
+}
+MyClass2 mc2 = new MyClass();
+mc2.fun(123);
+mc2.fun("hllo");
+
+
+Bounded Generics: If we want to use generic data types but want to support only some particular data-types in our method or class then we can use bounded generics. 
+
+class MyClass<T extends Number>{
+    T data;
+}
+// Now T can of number type only like Integer, Float, Double, Byte etc. It can't support String, Boolean, Characters. 
 
 
 
