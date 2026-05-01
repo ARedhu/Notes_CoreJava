@@ -422,7 +422,26 @@ Stack Memory: where the reference of objects and primitive data types are stored
 Object class in Java: 
 Object is the parent class of every class by default, we can use and even override few methods of this class. toString() is one of those methods which returns string. equals() is also one which returns true/false. We can override the hashcode() method as well, it returns int. getClass() method gives the class. If we try to print the object it will print it after using .toString() with it. 
 
-What is the contract b/w hashcode and equals method ? If equals method of two objects gives true that means their hashcode is also same. As each object has a unique hashcode. 
+What is the contract b/w hashcode and equals method ? If equals method of two objects gives true that means their hashcode is also same. As each object has a unique hashcode.  
+
+* We can override hashcode and equals method if we have custom objects. 
+Code-
+@Override
+public boolean equals(Object o){
+    if(this == o) return true;
+    if(o == null || getClass() != o.getClass()) return false;
+    Student student = (Student) o;
+    return rollNo == student.rollNo;
+}
+@Override
+public int hashCode(){
+    return Objects.hash(rollNo);
+}
+Usually when we print an object directly inside of sout, it converts the object to string using "toString()" method. So, we can override that method also. 
+@Override
+publci String toString(){
+    // override logic here. 
+}
 
 Parent class reference variable can point to child class object in java and will be able to access only the methods and variables of parent class. But its vice-versa is not possibe. For example every dog is an animal but every animal is not dog. 
 
@@ -542,6 +561,95 @@ class MyClass<T extends Number>{
     T data;
 }
 // Now T can of number type only like Integer, Float, Double, Byte etc. It can't support String, Boolean, Characters. 
+
+
+
+
+
+********************************** Java Collection Framework ***************************************
+
+Iterable (interface)
+   └── Collection (interface)
+         ├── List (interface)
+         │     ├── ArrayList (class)
+         │     ├── LinkedList (class)
+         │     └── Vector (class)
+         │           └── Stack (class)
+         │
+         ├── Set (interface) supports only unique elements. 
+         │     ├── HashSet (class) : No order. O(1) complexity for each operation. 
+         │     ├── LinkedHashSet (class) : Maintains insertion order. It's complexity for insertion is O(1) but for removal it is O(logN).
+         │     └── TreeSet (class) : sorted order, uses red-black tree or BST internally. It's complexity is O(logN) for each task. 
+         │
+         └── Queue (interface)
+               ├── PriorityQueue (class) : sorted based on priority.
+               ├── LinkedList (class)
+               └── Deque (interface)
+                     ├── ArrayDeque (class)
+                     └── LinkedList (class)
+
+Map (interface)  ❌ (Not part of Collection)
+   ├── HashMap (class)
+   ├── LinkedHashMap (class)
+   ├── TreeMap (class)
+   └── Hashtable (class)
+
+- Collection interface methods:
+add(E e), offer(E e), remove(Object o), size(): returns number of elements in the list, isEmpty(), contains(Object o), clear(), iterator(), toArray()
+
+- List Interface methods:
+add(int index, E element): add element at a particular index and shift the rest elements to the right side, get(int index), set(int index, E element): updates the value at a particular index, remove(int index), indexOf(Object o)
+
+- ArrayList (Dynamic array, fast access, slow insertion/deletion O(n))
+- LinkedList (Fast insertion/deletion, slow access), add(): add at the end, addFirst(), addLast();
+
+- Vector (Legacy): Thread-safe, slower than arraylist.
+- Stack (LIFO): push(), pop(), peek()
+- Queue (FIFO): add(), offer(), remove(), poll(), peek();
+- Deque: addFirst, addLast, removeFirst, removeLast, peekFirst, peekLast.
+* Try to implement Stack using ArrayDeque rather than Stack class itself if you don't want thread safety and only performance matters to you. As Stack class implements extends Vector class which is thread safe and uses locks which makes things slower. Also you can directly use push, pop, peek methods. 
+
+*offer and poll are better than add and remove. 
+
+📘 1. TIME COMPLEXITY TABLE (VERY IMPORTANT)
+Operation        ArrayList   LinkedList   HashSet   TreeSet   HashMap   TreeMap   Queue(PQ)
+------------------------------------------------------------------------------------------
+Add              O(1)*       O(1)         O(1)      O(log n)  O(1)      O(log n)  O(log n)
+Remove           O(n)        O(1)*        O(1)      O(log n)  O(1)      O(log n)  O(log n)
+Access (get)     O(1)        O(n)         ❌         ❌         O(1)      O(log n)  ❌
+Search           O(n)        O(n)         O(1)      O(log n)  O(1)      O(log n)  O(n)
+Insert middle    O(n)        O(1)*        ❌         ❌         ❌         ❌         ❌
+* LinkedList removal is O(1) only if reference is known
+
+HashMap:
+- Not thread-safe
+- Allows 1 null key + multiple null values
+- Faster
+
+Hashtable:
+- Thread-safe
+- No null allowed
+- Slower
+
+
+Enum: When we want the value of a variable can be of only some given specific values only, then we use enum.
+Code-
+enum Color{
+    RED, YELLOW, GREEN
+}
+
+
+Map interface methods: 
+put(key, value): overwrite if key-value pair already exist, putIfAbsent(key, value), 
+remove(key), get(key), containsKey(key), containsValue(value), size(), isEmpty(), clear(), 
+getOrDefault(key, defaultValue): returns the value present with respect to the key, if the key is not present then it will return the defaultValue.
+
+for(Integer key : hm.keySet()){ } // for traversal using keys. 
+for(String val : hm.values()){ } // for traversal using vaues. 
+for(Map.Entry<Integer, String> entry : hm.entrySet()){
+    sout(entry.getKey() + " " + entry.getValue());
+}
+The third one using entrySet is the efficient way to traverse HashMap, because it avoids extra lookup. 
 
 
 
