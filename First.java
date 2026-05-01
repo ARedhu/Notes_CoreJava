@@ -656,6 +656,100 @@ The third one using entrySet is the efficient way to traverse HashMap, because i
 
 
 
+********************************** Java Comparable, Comparator and Lambda functions ***************************************
+To define custom sorting we use these things in java. For example if we have to sort two employees or two students then we use use these things to tell the compiler on which basis we have to sort the objects of employees, if we have a list of employees. 
+
+1. Comparable:
+Comparable will define the sorting logic in the class itself by overriding the compareTo method. It is an interface used to define the natural or default sorting order of objects. 
+Code-
+public class Animal implements Comparable<Animal>{
+    int age;
+    String name;
+    int weight;
+    Animal(int age, int name, int weight){
+        this.age = age; this.name = name; this.weight = weight;
+    }
+    @Override
+    public String toString(){ // If we directly want to print the Object of animal inside of sout in a particular fashion. 
+        return "Animal{" + "age=" + age + ", name=" + name + ", weight=" + weight + "}" + "\n";
+    }
+
+    @Override
+    public int compareTo(Animal o){
+        return this.age - o.age;
+    }
+
+}
+public static void main(String[] args){
+    Animal a1 = new Animal(4, "Leo", 10);
+    Animal a2 = new Animal(4, "Leo", 7);
+    Animal a3 = new Animal(4, "Bruno", 7);
+    Animal a4 = new Animal(3, "Maxo", 6);
+    Animal a5 = new Animal(1, "Don", 3);
+
+    List<Animal>dogs = new ArrayList<>();
+    dogs.add(a1); dogs.add(a2); dogs.add(a3); dogs.add(a4); dogs.add(a5);
+
+    // dogs.sort();  this always needs a comparator inside of it.
+    Collections.sort(dogs);
+
+}
+
+2. Comparator
+Comparator is an interface used to define the custom sorting logic. It is implemented outside the class and uses the compare method. If we use comparable then we have to come to the class and update the compareTo() which is not good as some other user or some piece of code could be using that logic of sorting. So, we should define the sorting logic outside of class while sorting, using comparator. It is a functional interface(which has only a single method).
+Code-
+Collections.sort(dogs, new Comparator<Animal>(){
+    @Override
+    public int compare(Animal o1, Animal o2){
+        return Integer.compare(o1.age, o2.age);
+        // It is a better practice to use Integer.compare rather than o1.age - o2.age because sometimes the second method can lead to Integer overflow or say some wrong results. 
+    }
+});
+
+Comparable → single default sorting, compareTo() -> Takes 1 parameter
+Comparator → multiple custom sorting, compare() -> Takes 2 parameters.
+
+
+3. Lambda functions (Java 8+)
+This is a shorter way to define anonymous class and functional interface. 
+Code-
+Collections.sort(dogs, (a, b) -> {
+    if(a.age==b.age) return a.name.compareTo(b.name);
+    return Integer.compare(a.age, b.age);
+});
+
+* In real-world projects, we mostly prefer Comparator with lambda because it is more flexible and readable.
+
+4.) Comparing method
+To use this we have to define the getters like getAge, getName. Then we can use comparing on these getters. Comparator.comparing itself returns a comparator. 
+Code-
+Collections.sort(dogs, Comparator.comparing(Animal::getAge).thenComparing(Animal::getName));
+
+
+
+
+compare(a, b) -> a-b for ascending, b-a for descending. 
+| Return Value   | Meaning | Result           |
+| -------------- | ------- | ---------------- |
+| Negative (< 0) | a < b   | a comes BEFORE b |
+| Zero (0)       | a == b  | No change        |
+| Positive (> 0) | a > b   | a comes AFTER b  |
+
+
+// Internal working. 
+for Descending: We are using (a,b) -> Integer.compare(b,a);
+(a,b) says In the list a is before b. By using Integer.compare(b,a), we want to do b-a, if this gives -ve that means b is smaller. And, -ve means keeps the order same, so a, b will be the order where a > b. 
+
+
+
+Arrays.sort(arr, (arr1, arr2) -> {
+    return arr1[0] - arr2[0];
+}); // way to sort a 2D array on the basis of 1st element of each row. 
+
+
+
+
+
 
 
 
