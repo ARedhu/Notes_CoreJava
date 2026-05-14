@@ -317,7 +317,7 @@ ii) Public accessible to everyone even in the diff packages.
 
 iii) default: accessible to same package but not out of package. Also called package-private. 
 
-iv) Protected: accessble to all in the same package but only to the subclass/child class outside of package. This was introduced so that we can 
+iv) Protected: accessble to all in the same package but only to the subclass/child class outside of package. This was introduced so that we can share current class features outside of the package. 
 
 Remember these things apply to everything variables, functions, classes etc. 
 
@@ -746,6 +746,428 @@ Arrays.sort(arr, (arr1, arr2) -> {
     return arr1[0] - arr2[0];
 }); // way to sort a 2D array on the basis of 1st element of each row. 
 
+
+
+
+
+
+
+
+
+********************************** Multithreading ***************************************
+CPU: The brain of computer which executes intructions from program and performs arithematic, logical, control and I/O operations. eg. Intel, AMD. A CPU (Central Processing Unit) is a physical hardware component inside the computer.
+Core: The individual processing unit within a CPU. Modern CPUs have multiple cores allowing them to perform multiple tasks simultaneously. A core is an actual processing unit inside the CPU that executes instructions.
+Program: is a set of intructions written in a programming language that tells the computer how to perform a specific task. 
+Process: Instance of a program that is being executed. When a program runs, the OS creates a process to manage its execution. 
+Thread: is the smallest execution unit within a process. A process can have multiple threads which share same resources but can run independently. 
+
+Applications
+    ↓
+Operating System (OS): It is a software. 
+    ↓
+CPU / Cores (Hardware)
+    ↓
+Physical electronics (transistors, circuits)
+
+
+Multitasking: It is the ability of an OS to run multiple processes simultaneously. On a single-core CPU, this is done through time-sharing, rapidly switching b/w tasks. On multi-core CPUs, trulle parallel execution occurs. OS-scheduler balances the load, ensuring efficient and responsive system performance. 
+Multithreading: refers to the ability to execute multiple threads within a single process concurrently. Eg. We have multiple threads for rendering th page, running JS, managing user inputs. It is more granular. 
+Time Slicing: divides CPU time into small intervals called time slice or quanta. It prevents monopolizing the CPU, enable concurrent execution as CPU will allocate these quanta to threads and processes. 
+Context Switching: is the process of saving the state of a corrently running process or thread and loading the state of the next one to be executed. When a process or thread's time slice expires, the OS schedule performs a context switch to move the CPU's focus to another process or thread. 
+
+Java Multithreading: 
+Java multithreading properties are present in java.lang package. JVM and OS both helps in multithreading. Multithreading is supported via java.lang.Thread class and java.lang.Runnable class. When a java program starts, one thread begins immediately, which is called main thread. This thread is responsible for executing the main method of a program. 
+
+1.) Multithreading using Thread Class
+- A new class is created which will extends Thread class. 
+- Inside of this class we will override the run method to define the code that constitutes the new thread. 
+- Create object of this newly created class (inside the main function or where we want to use this class)
+- start method is called using this object to initiate new thread. 
+* Thread.currentThread().getName(); # to get the name of the thread. 
+* Also the execution of threads occur in random order. 
+
+Code: 
+ThreadClass1.java
+package threadlearning; // Remember the package name should be entirely in lowercase.
+// If we compile and run using the terminal the .class file will be created inside of same src/package folder. But if I directly run it using the run button then the .class file will be created inside of output(out) folder and will be executed from there.
+public class ThreadClass1 {
+    static void main() {
+        ThreadClass2 tc2 = new ThreadClass2();
+        tc2.start();
+        for(int i=0; i<10; i++) System.out.println("Hello");
+    }
+}
+ThreadClass2.java
+package threadlearning;
+// Java automatically imports java.lang.*; That's why we don't need to import java.lang.Thread class here. Also because of the same reason we can easily use String, Math, System, Thread, Exception, Object classes.
+public class ThreadClass2 extends Thread{
+    @Override
+    public void run(){
+        for(int i=0; i<10; i++) System.out.println("World");
+    }
+}
+
+
+
+2.) Multithreading using Runnable Interface
+- A new class is created that implements Runnable interface. 
+- Same run method is override. 
+- Now we create the object of this newly created class but we can't do newObject.start() because this start() method itself is present inside of Thread class. 
+- So, we will create the object of Thread class and pass this newObject inside of the object of Thread class as contructor argument. 
+- Now call the start() method using the object of Thread class. 
+
+Code: 
+ThreadClass1.java
+package threadlearning1;
+public class ThreadClass1 {
+    static void main() {
+        ThreadClass2 tc2 = new ThreadClass2();
+        Thread t1 = new Thread(tc2);
+        t1.start();
+        for(;;) System.out.println("Hello");
+    }
+}
+ThreadClass2.java
+package threadlearning2;
+public class ThreadClass2 implements Runnable{
+    @Override
+    public void run(){
+        for(;;) System.out.println("World");
+    }
+}
+
+
+
+
+Java Thread LifeCycle:
+1 New: A thread is in this state when it is created but not yet started. 
+2 Runnable: After the start method is called, the thread becomes runnable. It's read to run and is waiting for CPU time. 
+
+3 Running: The thread is in this state when it is executing. But remember there is not Running state inside of Thread class and Runnable interface. Runnable and Running are considered as same. There is an enum inside of Thread.java which has "NEW", "RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING", "TERMINATED".
+
+4 Blocked/Waiting: A thread is in this state when it is waiting for resources or for another thread to perform an action. 
+5 Terminated: A thread is in this state when it has finished execution. 
+
+- t1.getState(); # to get the state of the thread. 
+- Thread.sleep(timehere); # Causes the currently executing thread to sleep (temporarily cease execution) for the specified number of milliseconds. But remember if we are using it inside of any function then either use try-catch or that function has to throws InterruptedException. But if we are using it inside of any Overridden method (like run) then we have to use try-catch only, because we can't change the signature of the overridden method. 
+
+- t1.join(); # Now the thread that is calling this t1 class thread will wait until the complete execution of this t1 class thread. Like here the main thread is calling thread-0 (thread of t1 class)
+
+Code: 
+public class ThreadClass1 {
+    static void main() throws InterruptedException{
+        System.out.println("Main thread state: "+Thread.currentThread().getState());
+        ThreadClass2 tc2 = new ThreadClass2();
+        System.out.println("state of tc2 is: "+tc2.getState());
+        tc2.start();
+        System.out.println("After start, state of tc2 is: "+tc2.getState());
+        for(int i=0; i<10; i++) System.out.println("Hello");
+
+        Thread.sleep(100);
+    }
+}
+
+Question: If we have Thread class then do we need Runnable ? 
+Ans: If we want to create the thread of a child class then we can't extend Thread class as multiple inheritance is not possible in Java using Classes. In that case we have to implements Runnable interface. 
+
+
+
+--------------- Java Thread methods: --------------- 
+- t.setPriority(); // 0-10 min-max. Remember after setting the priority it doesn't mean that this particular thread will execute first or last. But this is a hint to the OS and JVM that try to execute this thread as late or early as possible. t1.getPriority() or Thread.getPriority for current thread. 
+- To rename a thread we can simply create the constructor the class and call the constructor of parent class by passing that newName in super. 
+- t.interrupt(); // method to interrupt the execution of thread. But remember it doesn't stop and destroy the thread immediately. It only sends an interruption signal/request. 
+- Thread.yield(); // It is a method to hint the schedule that "I am willing to pause now, so another thread can run". Remember it is just a suggestion. Schedular can ignore it completely. 
+- User Thread: is a normal thread that performs important work. JVM waits for all user threads to finish before exiting. eg. main thread, worker thread, business logic threads. 
+- Daemon Thread: is a background/support thread. eg. garbage collector, auto-save services, monitoring threads. JVM doesn't wait for daemon threads. When all user threads finish, JVM terminates, daemon threads stop automatically. 
+t.setDaemon(true);  // must be called before start to make a thread as daemon thread. 
+t.start();
+
+
+
+--------------- Synchronization: --------------- 
+- synchronized keyword: is used with functions or we can make a synchronized block as well inside of a function like synchronized(){}; It controls multiple threads accessing shared resources. synchronized allows only one thread at a time to access a critical section.. It prevents race condition, and inconsistent data. It ensures mutual exclusion. It is an implicit/intrinsic lock.
+
+
+- Race condition: occurs when two or more threads access shared data and try to change it at the same time. 
+How It Happens:
+Most race conditions happen because an operation that looks like one step to us is actually multiple steps for the CPU.
+
+Take the simple statement: count++;
+In the background, Java performs three distinct steps:
+    1. Read the current value of count.
+    2. Modify the value (add 1).
+    3. Write the new value back to memory.
+
+If Thread A reads the value, and then Thread B reads the same value before Thread A can write its update, both threads will increment the same starting number. One of those increments will be "lost."
+
+Threads: We can also create an anonymous class using Runnable and Override the run method. 
+Runnable rn = new Runnable(){
+    @Override
+    public void run(){
+        // some task here. 
+    }
+}
+Thread t1 = new Thread(rn, "thread1"); // (task, threadName)
+
+-------- Explicit Locks --------
+Explicit locks: Explicit locks in Java are advanced thread synchronization mechanisms provided by the Lock interface that give more control than synchronized, such as manual locking, tryLock, fairness, and interruptible locking.
+Explicit locks are provided in: java.util.concurrent.locks
+Main interface: Lock
+Most commonly used implementation: ReentrantLock
+
+
+Lock lock = new ReentrantLock();
+try{
+    lock.lock(); // the thread will wait until it receives the lock. 
+    lock.tryLock(); // the thread will try to get the lock, if the lock is not available it will leave. It prevents deadlock. 
+    lock.tryLock(time, timeUnit); // wait and try to get the lock within the given specified time. If the lock is not available the thread will leave. 
+    lock.unlock(); // always unlock in the finally block. 
+}
+catch(InterruptedException e){
+    Thread.currentThread().interrupt(); // always do this. It restores the interrupted status (means it tells to the higher-level code "hey this thread was interrupted") because InterruptedException clears the interrupt flag bydefault. 
+}
+
+Why This Is Important
+Suppose outer code checks interruption:
+while(!Thread.currentThread().isInterrupted()) {
+
+}
+
+ReentrantLock: Same thread can acquire the same lock multiple times, but it has to release the lock same number of times as well. A count is maintained internally. 
+
+Lock Interruptiblity: 
+lock.lock(): Thread waits no matter what, until gets lock. Even if someone says: "Stop waiting and go home"
+lock.lockInterruptibly(); "I'll wait for the key, but if someone interrupts me, I'll stop waiting."
+
+Code: 
+import java.util.concurrent.locks.ReentrantLock;
+public class InterruptibleLockExample {
+
+    static ReentrantLock lock = new ReentrantLock();
+
+    public static void main(String[] args) {
+
+        Thread t1 = new Thread(() -> {
+
+            lock.lock();
+
+            System.out.println("Thread 1 acquired the lock");
+
+            try {
+                Thread.sleep(5000);
+            }
+            catch (Exception e) {
+
+            }
+
+            System.out.println("Thread 1 releasing the lock");
+
+            lock.unlock();
+        });
+
+        Thread t2 = new Thread(() -> {
+
+            try {
+
+                System.out.println("Thread 2 trying to acquire lock");
+
+                lock.lockInterruptibly();
+
+                System.out.println("Thread 2 acquired the lock");
+
+                lock.unlock();
+            }
+            catch (InterruptedException e) {
+
+                System.out.println("Thread 2 was interrupted while waiting");
+            }
+        });
+
+        t1.start();
+
+        try {
+            Thread.sleep(100);
+        }
+        catch (Exception e) {
+
+        }
+
+        t2.start();
+
+        try {
+            Thread.sleep(1000);
+        }
+        catch (Exception e) {
+
+        }
+
+        System.out.println("Main thread interrupts Thread 2");
+
+        t2.interrupt();
+    }
+}
+
+- Lock Fairness: threads get the lock in the order they requested it. It helps threads starvation. 
+Lock lock = new ReentrantLock(); // bydefault it is unfair. 
+Lock lock = new ReentrantLock(true); // Now this is fair. 
+
+-Read/Write Lock: To increase the efficiency. ReadWriteLock allows multiple threads to read shared data simultaneously while ensuring exclusive access for write operations.
+ReentrantReadWriteLock=
+        new ReentrantReadWriteLock();
+
+Lock readLock = lock.readLock();
+Lock writeLock = lock.writeLock();
+
+readLock.lock(); 
+writeLock.lock();
+
+
+synchronized vs Lock
+| Feature               | synchronized | Lock |
+| --------------------- | ------------ | ---- |
+| Automatic release     | Yes          | No   |
+| Manual unlock         | No           | Yes  |
+| tryLock support       | No           | Yes  |
+| Interruptible waiting | No           | Yes  |
+| Fairness option       | No           | Yes  |
+| Starvation            | Yes          | No   |
+| Read/Write lock       | No           | Yes  |
+| Simpler               | Yes          | No   |
+
+
+
+Deadlock: is a situation where two or more threads are waiting for each other’s resources indefinitely, so none of them can proceed.
+
+1. Deadlock example using synchronized keyword (intrinsic lick):
+Thread 1 has Pen A and wants Pen B
+Thread 2 has Pen B and wants Pen A
+
+Code: 
+public class DeadlockDemo {
+
+    public static void main(String[] args) {
+
+        String penA = "Pen A";
+        String penB = "Pen B";
+
+        Thread t1 = new Thread(() -> {
+
+            synchronized (penA) {
+
+                System.out.println("Thread 1 took Pen A");
+
+                try {
+                    Thread.sleep(100);
+                }
+                catch (Exception e) {
+
+                }
+
+                System.out.println("Thread 1 waiting for Pen B");
+
+                synchronized (penB) {
+
+                    System.out.println("Thread 1 took Pen B");
+                }
+            }
+        });
+
+        Thread t2 = new Thread(() -> {
+
+            synchronized (penB) {
+
+                System.out.println("Thread 2 took Pen B");
+
+                try {
+                    Thread.sleep(100);
+                }
+                catch (Exception e) {
+
+                }
+
+                System.out.println("Thread 2 waiting for Pen A");
+
+                synchronized (penA) {
+
+                    System.out.println("Thread 2 took Pen A");
+                }
+            }
+        });
+
+        t1.start();
+        t2.start();
+    }
+}
+// In case of synchronized the unlock is handled by itself. 
+
+
+2. Deadlock example using Explicit lock: 
+T1 → has A → waiting for B
+T2 → has B → waiting for A
+
+Code: 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+public class DeadlockExample {
+
+    static Lock lockA = new ReentrantLock();
+    static Lock lockB = new ReentrantLock();
+
+    public static void main(String[] args) {
+
+        Thread t1 = new Thread(() -> {
+
+            lockA.lock();
+
+            System.out.println("Thread 1 locked Lock A");
+
+            try {
+                Thread.sleep(100);
+            }
+            catch (Exception e) {
+
+            }
+
+            System.out.println("Thread 1 waiting for Lock B");
+
+            lockB.lock();
+
+            System.out.println("Thread 1 locked Lock B");
+
+            lockB.unlock();
+            lockA.unlock();
+        });
+
+        Thread t2 = new Thread(() -> {
+
+            lockB.lock();
+
+            System.out.println("Thread 2 locked Lock B");
+
+            try {
+                Thread.sleep(100);
+            }
+            catch (Exception e) {
+
+            }
+
+            System.out.println("Thread 2 waiting for Lock A");
+
+            lockA.lock();
+
+            System.out.println("Thread 2 locked Lock A");
+
+            lockA.unlock();
+            lockB.unlock();
+        });
+
+        t1.start();
+        t2.start();
+    }
+}
+
+Question: How the code is actually working, it is looking new, how we are passing things inside of a thread ? 
+Answer: We are using lambda expression. As we know we can create anynoymous class an pass it. Or we can pass function interface as well. Or to short it as we know we have a single function updation only and that is run() function. So, we can directly use lambda functions here. 
 
 
 
