@@ -298,7 +298,7 @@ package com.test; // Here we are defining that this Test.java file/class is insi
 
 // External imports will be here only. 
 import java.util.*; // Here we are importing the whole package 'util' which is present inside of java package. 
-import java.util.Date; // Here we are importing the Date class which is present inside of util package which is present inside of java package and the right convention to say is, which is present inside ofjava.util package. 
+import java.util.Date; // Here we are importing the Date class which is present inside of util package which is present inside of java package and the right convention to say is, which is present inside of java.util package. 
 
 // Also it is mendatory and a convention also to import the external package here b/w the "package com.test" (means our package defining for current class) and current class definition which is below (class Test). Also we need to import these external classes only if they are not present in the package. If they are present in the diff class of same package then no need to import. 
 class Test{
@@ -309,7 +309,7 @@ class Test{
 
 Access modifiers: are used to set the accessbility(visibility) of classes, interfaces, variables, methods, constructors, data members and the settor methods. 
 
-i) Private keyword with variables of a class: Then these variables can be accessed by the same class only not even by the subclass or the objects of the same class. 
+i) Private keyword with variables of a class: Then these variables can be accessed by the same class only not even by the subclass or the objects of the same class. Access either using class name if made them static or using getter/setter using object. 
 
 - We can't make an independent static class. We can make a static class inside of another class only. 
 
@@ -502,6 +502,7 @@ class Main{
         throw new ArithmeticException("Trying to divide by 0");
     }
 }
+// Try-Catch Or Throws Exception. 
 * But remember if we are throwing exception by ourself then either put that throw statement inside of try block means handle it there only. Or put the "throws" keyword and exception name with function declaration/signature. 
 
 * We can create our own exceptions as well. 
@@ -540,7 +541,7 @@ class MyClass<E, T>{ // Here we simply have to tell the class that we are using 
 }
 
 MyClass<String, Integer> m1 = new MyClsas<>(); // Here while creating the object of this class we have to define that for this object, what would be the data types of those generic variables of the class. But remember it can contain only wrapper class like Integer, not primitive data type like int. 
-MyClass<String, String> m2 = new MyClass<String, Strign>(); // Older way.
+MyClass<String, String> m2 = new MyClass<String, String>(); // Older way.
 
 Similarly we can work with interfaces and methods also. 
 
@@ -657,7 +658,7 @@ The third one using entrySet is the efficient way to traverse HashMap, because i
 
 
 ********************************** Java Comparable, Comparator and Lambda functions ***************************************
-To define custom sorting we use these things in java. For example if we have to sort two employees or two students then we use use these things to tell the compiler on which basis we have to sort the objects of employees, if we have a list of employees. 
+To define custom sorting we use these things in java. For example if we have to sort two employees or two students then we use these things to tell the compiler on which basis we have to sort the objects of employees, if we have a list of employees. 
 
 1. Comparable:
 Comparable will define the sorting logic in the class itself by overriding the compareTo method. It is an interface used to define the natural or default sorting order of objects. 
@@ -731,7 +732,7 @@ Collections.sort(dogs, Comparator.comparing(Animal::getAge).thenComparing(Animal
 compare(a, b) -> a-b for ascending, b-a for descending. 
 | Return Value   | Meaning | Result           |
 | -------------- | ------- | ---------------- |
-| Negative (< 0) | a < b   | a comes BEFORE b |
+| Negative (< 0) | a < b   | a comes BEFORE b | -ve means keep the order same. 
 | Zero (0)       | a == b  | No change        |
 | Positive (> 0) | a > b   | a comes AFTER b  |
 
@@ -770,7 +771,7 @@ CPU / Cores (Hardware)
 Physical electronics (transistors, circuits)
 
 
-Multitasking: It is the ability of an OS to run multiple processes simultaneously. On a single-core CPU, this is done through time-sharing, rapidly switching b/w tasks. On multi-core CPUs, trulle parallel execution occurs. OS-scheduler balances the load, ensuring efficient and responsive system performance. 
+Multitasking: It is the ability of an OS to run multiple processes simultaneously. On a single-core CPU, this is done through time-sharing, rapidly switching b/w tasks. On multi-core CPUs, true parallel execution occurs. OS-scheduler balances the load, ensuring efficient and responsive system performance. 
 Multithreading: refers to the ability to execute multiple threads within a single process concurrently. Eg. We have multiple threads for rendering th page, running JS, managing user inputs. It is more granular. 
 Time Slicing: divides CPU time into small intervals called time slice or quanta. It prevents monopolizing the CPU, enable concurrent execution as CPU will allocate these quanta to threads and processes. 
 Context Switching: is the process of saving the state of a corrently running process or thread and loading the state of the next one to be executed. When a process or thread's time slice expires, the OS schedule performs a context switch to move the CPU's focus to another process or thread. 
@@ -841,14 +842,15 @@ public class ThreadClass2 implements Runnable{
 
 Java Thread LifeCycle:
 1 New: A thread is in this state when it is created but not yet started. 
-2 Runnable: After the start method is called, the thread becomes runnable. It's read to run and is waiting for CPU time. 
+2 Runnable: After the start method is called, the thread becomes runnable. It's ready to run and is waiting for CPU time. 
 
-3 Running: The thread is in this state when it is executing. But remember there is not Running state inside of Thread class and Runnable interface. Runnable and Running are considered as same. There is an enum inside of Thread.java which has "NEW", "RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING", "TERMINATED".
+3 Running: The thread is in this state when it is executing. But remember there is no Running state inside of Thread class and Runnable interface. Runnable and Running are considered as same. There is an enum inside of Thread.java which has "NEW", "RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING", "TERMINATED".
 
 4 Blocked/Waiting: A thread is in this state when it is waiting for resources or for another thread to perform an action. 
 5 Terminated: A thread is in this state when it has finished execution. 
 
 - t1.getState(); # to get the state of the thread. 
+// Try-Catch Or Throws Exception
 - Thread.sleep(timehere); # Causes the currently executing thread to sleep (temporarily cease execution) for the specified number of milliseconds. But remember if we are using it inside of any function then either use try-catch or that function has to throws InterruptedException. But if we are using it inside of any Overridden method (like run) then we have to use try-catch only, because we can't change the signature of the overridden method. 
 
 - t1.join(); # Now the thread that is calling this t1 class thread will wait until the complete execution of this t1 class thread. Like here the main thread is calling thread-0 (thread of t1 class)
@@ -1007,13 +1009,12 @@ public class InterruptibleLockExample {
     }
 }
 
-- Lock Fairness: threads get the lock in the order they requested it. It helps threads starvation. 
+- Lock Fairness: threads get the lock in the order they requested it. It helps to prevent threads starvation. 
 Lock lock = new ReentrantLock(); // bydefault it is unfair. 
 Lock lock = new ReentrantLock(true); // Now this is fair. 
 
 -Read/Write Lock: To increase the efficiency. ReadWriteLock allows multiple threads to read shared data simultaneously while ensuring exclusive access for write operations.
-ReentrantReadWriteLock=
-        new ReentrantReadWriteLock();
+ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
 Lock readLock = lock.readLock();
 Lock writeLock = lock.writeLock();
@@ -1038,7 +1039,7 @@ synchronized vs Lock
 
 Deadlock: is a situation where two or more threads are waiting for each other’s resources indefinitely, so none of them can proceed.
 
-1. Deadlock example using synchronized keyword (intrinsic lick):
+1. Deadlock example using synchronized keyword (intrinsic lock):
 Thread 1 has Pen A and wants Pen B
 Thread 2 has Pen B and wants Pen A
 
@@ -1167,12 +1168,199 @@ public class DeadlockExample {
 }
 
 Question: How the code is actually working, it is looking new, how we are passing things inside of a thread ? 
-Answer: We are using lambda expression. As we know we can create anynoymous class an pass it. Or we can pass function interface as well. Or to short it as we know we have a single function updation only and that is run() function. So, we can directly use lambda functions here. 
+Answer: We are using lambda expression. As we know we can create anynoymous class an pass it. Or we can pass function interface as well. Or to short it as we know we have a single function updation only and that is run() function. So, we can directly use lambda functions here. Lambda expression is basically an anonymous function. Runnable is a functional interface that is why we can replace it with lambda expression. 
+
+
+4-condition for a Deadlock:
+    1. Mutual Exclusion: Only one thread can access a resource at a time. 
+    2. Hold and wait: A thread is holding at least one resource and is awaiting to acquire additional resources held by other threads. 
+    3. No Preemption: Resources cannot be forcibly taken from threads holding them. 
+    4. Circular Wait: A set of threads is waiting for each other in a circular chain. 
+
+Ways to Avaoid Deadlock:
+1. Maintain consistent lock order: Always acquire lock in the same order across all threads. 
+2. use tryLock() or if possible tryLock() with time. 
+3. keep critical section small and put concurrent utilities on higher-level. 
+4. Minimize nested locks. 
+5. Detect lock during debugging using jstack. 
+
+* ACID properties in Database. 
+
+* Thread Communication: 
+Without proper communication mechanisms, threads might end up in inefficient busy-waiting, leading to wastage of CPU resources and potential deadlocks. 
+Producer-Consumer problem. 
+If the queue is empty consumer should wait. if producer adds data consumer should wake up. If queue is empty producer should add data in the queue. This problem is solved using Thread communication. 
+    1. wait(): Makes current thread release the the lock and go into waiting state. Thread stays waiting until another thread calls notify() or notifyAll() method. 
+    2. notify(): wakes up one waiting thread. 
+    3. notifyAll(): wakes up all waiting threads. 
+
+Remember these methods must be called inside synchronized block or method other you will get IllegalMonitorStateException. 
+
+class Shared {
+
+    private boolean available = false;
+
+    synchronized void produce() {
+
+        System.out.println("Produced Item");
+        available = true;
+        notify(); // wake consumer
+    }
+
+    synchronized void consume() {
+
+        while (!available) {
+            try {
+                wait(); // wait until item available
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.out.println("Consumed Item");
+        available = false;
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Shared obj = new Shared();
+
+        Thread producer = new Thread(() -> {
+            obj.produce();
+        });
+
+        Thread consumer = new Thread(() -> {
+            obj.consume();
+        });
+
+        consumer.start();
+        producer.start();
+    }
+}
+
+* Thread Safety: Means when multiple threads are trying to access a resource but race condition is not occuring, data is consistent. 
+
+* Thread Pool: Collection of pre-initialized threads that are ready to perform a task. Here threads are created once, reused multiple times. We need thread pool because new thread creation every time takes time, memory is allocated, CPU scheduling overhead increases. This controls over thread count, increase response time and better resource management. 
+    Task → Thread Pool → Available Worker Thread
+Basic Analogy: Like the Restaurant don't hire a new waiter for every new customer. 
+
+
+Executor Framework: Instead of creating and managing threads manually we can use an inbuilt concurrency framework. Because manual thread creation and management is memory heavy, uncontrolled thread count, increase response time as well. It was introduced in Java 5. 
+
+Present inside package: java.util.concurrent
+
+Executor (Interface)
+│
+├── ExecutorService (Interface)
+│   │
+│   ├── ScheduledExecutorService (Interface)
+│   │
+│   └── AbstractExecutorService (Abstract Class)
+│       │
+│       ├── ThreadPoolExecutor (Class)
+│       │   │
+│       │   └── ScheduledThreadPoolExecutor (Class)
+│       │
+│       └── ForkJoinPool (Class)
+│
+└── Executors (Utility Factory Class)
+
+Task → Executor → Thread Pool → Execution
 
 
 
+* Worker Threads -> that executes tasks. Task Queue -> stores waiting tasks. 
+* Pool Size Limits: 
+    i.) corePoolSize(default number of threads available to execute a task)
+    ii.) maximumPoolSize (maximum number of threads that can exist in thread pool including the newly created threads. These new threads are created automatically if threads count is < maximumPoolSize and no normal worker thread is available to execute newly coming taks and queue is also full. These newly created threads gets destroyed when no new task is present either in the queue or somewhere else and normal worker threads are available).
+* Rejection Policy -> what happens when both the threads and queue are full. 
+
+
+* Working: A thread pool contains a set of worker threads and a task queue. When a new task arrives, if a thread is available, the task is executed immediately. If all threads are busy, the task is placed into the queue. If the queue also becomes full, then either a new thread is created (if the maximum pool size has not been reached) or a rejection policy is applied. Depending on the rejection policy, the new task may be discarded, or the oldest waiting task in the queue may be removed and replaced with the new task.
+
+Code: 
+import java.util.concurrent.Executors;
+ExecutorService executor = Executors.newFixedThreadPool(2); // Thread pool will have only two threads.
+for(int i=0; i<5; i++){
+    executor.execute(()->{
+        sout("i="+i+" threadName="+ Thread.currentThread().getName()); // Here you will see that only two thread names will come. 
+    })
+}
+executor.shutdown(); // This is important to do. It tells No more new tasks will come. Finish the already submitted tasks and then terminate the worker threads. If it is not done, thread pool may keep running indefinitely. 
+
+' executor.shutdownNow(); // Tries to shutdown immediately. 
+
+// Here we don't have to create the threads by ourself. We can use the inbuilt methods and simply pass the runnable inside of those methods. 
+
+* Runnable: We can say a lambda function or a task that don't return anything. These are basically consumers. These simply perform some work. .execute(runnable); runnable has run() method in built. Exception is lost. 
+
+* Callable: These return something. These are producers. .submit(callable); submit can accept both runnable and callable while the execute can only accept runnable. submit returns a Future value. callable has call() method in built. We can catch the exception. 
+
+* Future: As we know the tasks are executed in asynchronous manner so we can't directly store the returned value of submit's callable ' in a variable because the normal variables need instant assignation. That is why a new data type was introduced called Future which represents the result of asynchronous computation. In real Future is not a data type. It is an interface present inside of : java.util.concurrent.Future.
+
+Code:
+Future<Integer>future = executor.submit(callable which will return integer value); // Remember Future is an interface.  Name can be anything "future", "a", "hello" etc. 
+
+What if some exception occurs: 
+try {
+    future.get();
+} catch (ExecutionException e) {
+    System.out.println(e.getCause());
+}
+
+Some inbuilt methods of Future:
+future.get(); // returns the result. If result is not ready then the main thread will wait or say stops working and this thread which is executing callable of this future will execute. 
+future.isDone(); // returns true/false.
+future.cancel(); // try to cancel task.
+isCancelled(); // check cancelled or not. 
+
+Few other methods:
+What if we have multiple callables. Then we can use:
+i) invokeAll(takes a list/collection of callable tasks only not runnable); waits untill all taks complete, returns a list of future objects. 
+Code: 
+    List<Future<Integer>> futures =
+    executor.invokeAll(tasks);
+ii) invokeAny(takes a list of callable); returns result of FIRST successfully completed task, remaining tasks are cancelled/interrupted.
 
 
 
+Executors.newFixedThreadPool(2); internal working. It internally creats the below object. This is enough in most of the cases. But if we need too much control then we can use the below one. 
+ThreadPoolExecutor executor = new ThreadPoolExecutor(
+    int corePoolSize, // corePoolSize: 2,
+    int maximumPoolSize,  // maximumPoolSize: 5,
+    long keepAliveTime,   // keepAliveTime: 10,
+    Timeunit unit,        // TimeUnit.SECONDS,
+    Blocking queue        // new ArrayBlockingQueue<>(capacity:5)
+);
+type of queue: 
+i) ArrayBlockingQueue
+ii) LinkedBlockingQueue: this can be infinite in size. 
 
+
+
+Type of thread pools: 
+i) newFixedThreadPool(): limited number of threads and unlimited size of queue. Good for servers, APIs, database processing. 
+ii) newCachedThreadPool(); unlimited number of threads as threads are created dynamically on demand. keepAliveTime is 60seconds. Empty queue. So much memory. Good for small tasks.  
+iii) newSingleThreadExecutor(); only one worker thread. Tasks are executed sequentially. Good for logging systems. Slow for larget workloads. 
+
+iv) Scheduled thread pool: Used to execute tasks after a delay or repeatedly at fixed intervals. Mainly used for send OTP expiry, clean cache every 10min, run background taks. 
+Code: ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+imp. methods:
+- scheduler.schedule(task, delay, timeUnit); // used to execute a task once after a delay from current time.  
+- scheduler.scheduleAtFixedRate(task, initialDelay, period, timeUnit); // tries to maintain to the period diff between two tasks execution including the execution time of first task. taskExecutionTime=1 sec, delay=3sec. next task will execute after 3sec. 
+- scheduler.scheduleWithFixedDelay(task, initialDelay, period, timeUnit); // same as upper but it doesn't include the task execution time. taskExecutionTime=1 sec, delay=3sec. next task will execute after 4sec. 
+
+- ForkJoinPool. 
+
+
+Rejection Policies: 
+- Abort Policy: Reject the newly coming task with exception. 
+- Discard Policy: Reject the newly coming task silently. 
+- Discard Oldest Policy: Removes oldest waiting task from the queue and  insert newly coming task at the end of the queue. 
+
+
+// End. 
 
