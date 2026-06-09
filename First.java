@@ -1304,7 +1304,7 @@ executor.shutdown(); // This is important to do. It tells No more new tasks will
 Code:
 Future<Integer>future = executor.submit(callable which will return integer value); // Remember Future is an interface.  Name can be anything "future", "a", "hello" etc. 
 
-What if some exception occurs: 
+What if some exception occurs: Two type of exceptions future throws InterruptedException and ExecutionException and both are compile time handled. 
 try {
     future.get();
 } catch (ExecutionException e) {
@@ -1316,6 +1316,7 @@ future.get(); // returns the result. If result is not ready then the main thread
 future.isDone(); // returns true/false.
 future.cancel(); // try to cancel task.
 isCancelled(); // check cancelled or not. 
+So, we prefer to pass even the runnable into .submit so that we can use these methods on it. 
 
 Few other methods:
 What if we have multiple callables. Then we can use:
@@ -1360,6 +1361,218 @@ Rejection Policies:
 - Abort Policy: Reject the newly coming task with exception. 
 - Discard Policy: Reject the newly coming task silently. 
 - Discard Oldest Policy: Removes oldest waiting task from the queue and  insert newly coming task at the end of the queue. 
+
+
+
+
+
+------------------------------ CompletableFuture: ------------------------------------ 
+
+Future has some limitations that when we use f1.get() it will stop the execution of current thread and makes the thread kind of sequential execution which is not good. Because the basis of threads is to increase parallel execution. 
+
+
+CompletableFuture introduced in Java 8. This helps us to do chaining of methods and it is non-blocking. 
+Code:
+CompletableFuture<Integer>future = CompletableFuture.supplyAsync(lambda function here)
+                                            .thenApply(num -> num*10)
+                                            
+CompletableFuture<Void>future2 = CompletableFuture.supplyAsync(()-> 10)
+                                            .thenAccept(num -> sout(num));
+// We can do chaining of functions here. 
+
+thenApply() : Transforms results and returns something. 
+thenAccept() : Consumes result but returns nothing.
+thenRun() : Runs another task after completion.
+
+// While chaining, the next method will accept the return value of upper/previous one. See example 2, where we are not returning anything from the last method as it consumed the returned values of previous method. So, the reference variable will accept "Void" kind of value as it is not actually accepting anything. 
+
+
+.runAsync(runnableOnly)
+.supplyAsync(callable)
+
+
+* Combine Futures: f1.thenCombine(f2, combinationLogic): 
+
+Used to combine to output/result of two futures. 
+Code: 
+CompletableFuture<Integer> future1 =
+        CompletableFuture.supplyAsync(() -> 10);
+
+CompletableFuture<Integer> future2 =
+        CompletableFuture.supplyAsync(() -> 20);
+
+CompletableFuture<Integer> result =
+        future1.thenCombine(future2, (a, b) -> a + b);
+
+System.out.println(result.join()); // So, that the main thread can wait till we get result from this thread. 
+
+
+* Thread Pool 
+
+By default: Uses common ForkJoinPool
+You can provide custom ExecutorService.
+Code:
+ExecutorService executor = Executors.newFixedThreadPool(3);
+CompletableFuture.supplyAsync(() -> {
+    return "Hello";
+}, executor);
+
+
+
+
+------------------------------ ForkJoinPool: ------------------------------------ 
+
+ForkJoinPool is a special thread pool in Java designed for: Parallel execution, Recursive divide-and-conquer tasks, Efficient utilization of CPU cores
+It was introduced in Java 7 in: java.util.concurrent
+
+Each thread has its own queue as well apart from the main queue of the thread pool which is called work-stealing queue. If no task is present in the work stealing queue of current thread and no task is presen in the main queue as well. It will steal the work from the queue of another task and do it. Each task is broken down into smaller parts and then sent to work-stealing queue. 
+
+
+Two important subclasses:
+Class	           | Returns Result?
+RecursiveTask<T>   |        Yes
+RecursiveAction	   |        No
+
+
+Example: Sum of Array Using ForkJoinPool. This is simply a divide and conquer technique. 
+Code:
+import java.util.concurrent.*;
+class SumTask extends RecursiveTask<Integer> { // We have to extends RecursiveTask<?> class. 
+
+    private int[] arr;
+    private int start;
+    private int end;
+
+    public SumTask(int[] arr, int start, int end) {
+        this.arr = arr;
+        this.start = start;
+        this.end = end;
+    }
+
+    @Override
+    protected Integer compute() {
+
+        // Small task
+        if (end - start <= 2) {
+            int sum = 0;
+
+            for (int i = start; i < end; i++) {
+                sum += arr[i];
+            }
+
+            return sum;
+        }
+
+        // Divide task
+        int mid = (start + end) / 2;
+
+        SumTask leftTask = new SumTask(arr, start, mid);
+        SumTask rightTask = new SumTask(arr, mid, end);
+
+        // Fork left task. Means we will not do it by ourself. The another thread will do it. 
+        leftTask.fork();
+
+        // Compute right directly
+        int rightResult = rightTask.compute();
+
+        // Join left result
+        int leftResult = leftTask.join();
+
+        return leftResult + rightResult;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+
+        int[] arr = {1,2,3,4,5,6,7,8};
+
+        ForkJoinPool pool = new ForkJoinPool();
+
+        SumTask task = new SumTask(arr, 0, arr.length);
+
+        int result = pool.invoke(task);
+
+        System.out.println(result);
+    }
+}
+
+
+
+------------------------------ ThreadLocal: ------------------------------------ 
+ThreadLocal in Java is used to create thread-specific variables.
+
+It means:
+Every thread gets its own separate copy of the variable.
+Changes made by one thread are NOT visible to other threads.
+
+Code:
+ThreadLocal<String>threadLocal = new ThreadLocal<>();
+// we can use get, set methods. 
+Thread t1 = new Thread(()->{
+    threadLocal.set("ashish");
+})
+Thread t2 = new Thread(()->{
+    threadLocal.set("golu");
+})
+// Now we don't have to use Locks and race condition will also not happen. 
+
+
+
+Virtual Threads are lightweight threads introduced in Java as part of Project Loom.
+They became officially available in: Java 21 (stable)
+
+Package:
+java.lang.Thread
+
+Traditional java Threads(platform threads) are managed by the OS, expensive to create and consume more memory. Here virtual threads comes into picture which are managed by JVM, very lightweight and can create millions of them. 
+Internal Working:
+Virtual threads run on top of a small number of real OS threads called: Carrier Threads. JVM schedules virtual threads onto carrier threads. If 
+If any virtual thread block because of any reason may be I/O opertion or any other reason. Then JVM will break the connection of this virtual thread with the OS thread and connect the OS thread will another virtual thread. 
+
+Virtual Threads
+   ↓ ↓ ↓ ↓ ↓
+Carrier Threads (few OS threads)
+   ↓
+  CPU
+
+  
+Code:
+ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+
+executor.submit(() -> {
+    System.out.println("Task");
+});
+// Each task gets a new virtual thread.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // End. 
